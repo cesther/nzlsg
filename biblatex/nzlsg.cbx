@@ -1,0 +1,255 @@
+% $Id: verbose-ibid.cbx,v 0.7 2007/12/09 14:52:00 lehman beta $
+
+\ProvidesFile{verbose-ibid.cbx}
+[\blx@cbxid $Id: verbose-ibid.cbx,v 0.7 2007/12/09 14:52:00 lehman beta $]
+
+\ExecuteBibliographyOptions{citetracker=context,ibidtracker=constrict,
+                            pagetracker,autocite=footnote}
+\providecommand*{\mkibid}[1]{#1}
+\newbool{cbx@loccit}
+
+\setlength\bibhang{0pt}
+\renewcommand\bibfont{\small}
+
+%orginginal bib print sorting
+%\defbibheading{articles}{\subsection*{Articles/Books/Reports}}
+%\defbibheading{cases}{\subsection*{Case Law}}
+%\defbibheading{legislation}{\subsection*{Legislation}}
+%\defbibheading{treaties}{\subsection*{Treaties}}
+%\defbibheading{other}{\subsection*{Other Sources}}
+%
+%\defbibfilter{articles}{\not \keyword{citeonly} \and \( \type{book} \or \type{inbook} \or \type{incollection} \or \type{article} \)}
+%
+%\defbibfilter{cases}{\not \keyword{citeonly} \and \type{jurisdiction}}
+%
+%\defbibfilter{legislation}{\not \keyword{citeonly} \and \type{legislation}}
+%
+%\defbibfilter{treaties}{\not \keyword{citeonly} \and \type{legal}}
+%
+%\defbibfilter{other}{\not\keyword{citeonly} \and \not \( \type{book} \or \type{inbook} \or \type{incollection} 
+%                     \or \type{article} \or \type{jurisdiction} \or 
+%                     \type{legislation} \or \type{legal} \)}
+
+\defbibheading{books}{\subsection*{Books/Reports etc}}
+\defbibheading{articles}{\subsection*{Journal Articles}}
+\defbibheading{cases}{\subsection*{Cases}}
+\defbibheading{cases_au}{\subsubsection*{Australia}}
+\defbibheading{cases_en}{\subsubsection*{England}}
+\defbibheading{cases_nz}{\subsubsection*{New Zealand}}
+\defbibheading{legislation}{\subsection*{Legislation}}
+\defbibheading{legislation_au}{\subsubsection*{Australia}}
+\defbibheading{legislation_en}{\subsubsection*{England}}
+\defbibheading{legislation_nz}{\subsubsection*{New Zealand}}
+\defbibheading{treaties}{\subsection*{Treaties}}
+\defbibheading{other}{\subsection*{Other Sources}}
+
+\defbibfilter{books}{\not \keyword{citeonly} \and \( \type{book} \or \type{report} \or \type{inbook} \or \type{incollection}\)}
+
+\defbibfilter{articles}{\not \keyword{citeonly} \and \(\type{article} \)}
+
+%\defbibfilter{cases}{\not \keyword{citeonly} \and \type{jurisdiction}}
+
+\defbibfilter{cases}{\keyword{emptyselectionplease}}
+\defbibfilter{cases_au}{\not \keyword{citeonly} \and \(\keyword{au} \and \type{jurisdiction}\)}
+\defbibfilter{cases_en}{\not \keyword{citeonly} \and \keyword{en} \and \type{jurisdiction}}
+\defbibfilter{cases_nz}{\not \keyword{citeonly} \and \keyword{nz} \and \type{jurisdiction}}
+
+%cge hack hack hack - must be able to do this with sort levels?
+\defbibfilter{legislation}{\keyword{emptyselectionplease}}
+\defbibfilter{legislation_au}{\not \keyword{citeonly} \and \(\keyword{au} \and \type{legislation}\)}
+\defbibfilter{legislation_en}{\not \keyword{citeonly} \and \keyword{en} \and \type{legislation}}
+\defbibfilter{legislation_nz}{\not \keyword{citeonly} \and \keyword{nz} \and \type{legislation}}
+
+\defbibfilter{treaties}{\not \keyword{citeonly} \and \type{legal}}
+
+\defbibfilter{other}{\not\keyword{citeonly} \and \not \( \type{book} \or \type{inbook} \or \type{incollection} \or \type{article} \or \type{jurisdiction} \or \type{legislation} \or \type{legal} \)}
+
+
+\DefineBibliographyStrings{english}{%
+  andothers            = {et al},
+  typeeditor           = {\addspace{}(ed)},
+  typeeditors          = {\addspace{}(eds)},
+  edition              = {ed},
+  january              = {January},
+  february             = {February},
+  march                = {March},
+  april                = {April},
+  may                  = {May},
+  june                 = {June},
+  july                 = {July},
+  august               = {August},
+  september            = {September},
+  october              = {October},
+  november             = {November},
+  december             = {December},
+}
+
+\DeclareListFormat{endash}{% 
+#1% 
+\ifthenelse{\value{listcount}<\value{liststop}} 
+{--} 
+{}}
+
+\newrobustcmd{\mkbibangle}[1]{%
+  \begingroup%
+  \let\mkbibangle\blx@nobrackets%
+  $<$#1$>$%
+  \endgroup}
+\DeclareFieldFormat{angle}{\mkbibangle{#1}}
+
+
+\def\wmkbibordinal#1{%
+    \@tempcnta0#1 \the\@tempcnta
+    \ifthenelse{\@tempcnta>1000}{\hspace{0.2em}}{%
+    \@whilenum\@tempcnta>100\do{\advance\@tempcnta-100}%
+    \ifnum\@tempcnta>20
+      \@whilenum\@tempcnta>9\do{\advance\@tempcnta-10}%
+    \fi
+    $^{\ifcase\@tempcnta th\or st\or nd\or rd\else th\fi}$}}%
+\DeclareFieldFormat{edition}{\wmkbibordinal{#1}\hspace{0.1em}\bibstring{edition}}
+
+
+% Used in the bibliography, always last-first, if too many names show the first with "et al"
+\DeclareNameFormat{sortname}{%
+  \ifthenelse{\value{listcount}>1\and\value{listtotal}>\value{liststop}}{}%
+    {\usebibmacro{name:last-first}{#1}{#3}{#5}{#7}}%
+  \usebibmacro{name:andothers}}
+
+% Used in all citations, always first-last, if too many names show the first with "et al"
+\DeclareNameFormat{default}{%
+  \ifthenelse{\value{listcount}>1\and\value{listtotal}>\value{liststop}}{}{%
+    \usebibmacro{name:first-last}{#1}{#3}{#5}{#7}}%
+  \usebibmacro{name:andothers}}
+
+% Print "et al" with only the first author
+\renewbibmacro*{name:andothers}{% 
+  \ifthenelse{\value{listtotal}>\value{liststop}\AND\value{listcount}=2\AND\ifmorenames}%
+    {\addspace\bibstring{andothers}}%
+    {}} 
+
+\DeclareBibliographyOption{ibidpage}[true]{%
+  \ifstrequal{#1}{true}
+    {\ExecuteBibliographyOptions{loccittracker=constrict}}
+    {\ExecuteBibliographyOptions{loccittracker=false}}}
+
+
+% Redefine how backref works, to use footnotes, not pages.
+\def\blx@backref@global{%
+  \iffootnote{%
+  \blx@leavevmode%
+  \if@filesw%
+    \protected@write\@mainaux{}{\string\bib@aux@backref%
+      {\the\c@instcount}{\bib@field@entrykey}%
+      {\the\c@refsection}{\thefootnote}}%
+  \fi}{}}
+
+\DeclareListFormat{last}{\ifthenelse{\value{listcount}=1}{#1}{}}
+\DeclareNameFormat{surname}{\ifthenelse{\value{listcount}=1}{#1}{}}
+
+\newbibmacro{author/editor:surname}{%
+  \ifthenelse{\ifuseauthor\AND\NOT\ifnameundef{author}}%
+    {\ifuseauthor{\printnames[surname]{author}}{}}%
+    {\ifthenelse{\ifuseeditor\AND\NOT\ifnameundef{editor}}{\printnames[surname]{editor}}{}}}
+
+\newbibmacro*{cite}{%
+  \global\boolfalse{cbx@loccit}%
+  \ifciteseen{%
+    \iffieldundef{shorthand}%
+       {\ifthenelse{\ifciteibid\AND\NOT\iffirstonpage}%
+          {\usebibmacro{cite:ibid}}%
+{\ifthenelse{\(\equal{\thefield{entrytype}}{jurisdiction}\or\equal{\thefield{entrytype}}{legislation}\or\equal{\thefield{entrytype}}{online}                          \or\equal{\thefield{entrytype}}{legal}\)\or\not\ifciteseen}%
+             {\usebibmacro{cite:short} \addcomma\addspace above n~\printlist[last]{pageref}}%
+             {\usebibmacro{author/editor:surname}\addcomma\addspace above n~\printlist[last]{pageref}}}%
+       {\usebibmacro{cite:shorthand}}}}%
+    {\usebibmacro{cite:full}}}
+
+
+\newbibmacro*{cite:full}{%
+  \printtext[bibhypertarget]{%
+    \usedriver
+      {\DeclareNameAlias{sortname}{default}}
+      {\thefield{entrytype}}}%
+  \usebibmacro{shorthandintro}}
+
+
+% Display the shorthand, for AGLC2 rules 2.1.8 and 2.1.9. eg (`Mabo')
+% This can be overridden by the field "shorthandintro" eg (I will sometimes refer to this case as Mabo)
+\renewbibmacro*{shorthandintro}{%
+  \iffieldundef{shorthandintro}
+    {\ifthenelse{\iffieldundef{shorttitle} \and \iffieldundef{shorthand}}
+       {}
+       {\setunit{\addspace}%
+        \printtext[parens]{%
+          {\it {\usebibmacro{shorthand-or-title}\hspace{0.15em}}}}}}
+    {\setunit{\addspace}%
+     \printtext[parens]{\printfield{shorthandintro}}}}
+     
+
+% Pick either the shorthand or the shorttitle, if there is no shorthand.
+\newbibmacro*{shorthand-or-title}{%
+    {\it \iffieldundef{shorthand}%
+        {\iffieldundef{shorttitle}%
+            {\thefield{title}}%
+            {\thefield{shorttitle}}}%
+        {\thefield{shorthand}}%
+}}
+
+
+\newbibmacro*{cite:short}{%
+  %\printnames{labelname}%
+  %\setunit*{\addcomma\space}%
+  %\printtext[bibhyperlink]{%
+    %\printfield[citetitle]{labeltitle}}}
+  \printtext[bibhypertarget]{%
+    \usedriver{}{short:\thefield{entrytype}}}}%
+
+\newbibmacro*{cite:shorthand}{%
+  \printtext[bibhyperlink]{%
+    \printfield{shorthand}}}
+
+\newbibmacro*{cite:ibid}{%
+  \printtext[bibhyperref]{Ibid}%
+  \ifloccit
+    {\global\booltrue{cbx@loccit}}
+    {}\iffieldundef{postnote}{}{\nopunct}}
+
+\newbibmacro*{cite:postnote}{%
+  \ifbool{cbx@loccit}
+    {}
+    {\usebibmacro{postnote}}}
+
+
+% This command prints only the citation for a given case, eg [2006] HCA 14
+\DeclareCiteCommand{\citecase}
+  {\citetrackerfalse
+   \pagetrackerfalse
+   \usebibmacro{prenote}}
+  {%\indexfield{indextitle}%
+   \printfield[citecase]{note}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+
+\DeclareCiteCommand{\cite}
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {\multicitedelim}
+  {\usebibmacro{cite:postnote}}
+
+\DeclareCiteCommand{\parencite}[\mkbibparens]
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {\multicitedelim}
+  {\usebibmacro{cite:postnote}}
+
+\DeclareCiteCommand{\footcite}[\mkbibfootnote]
+  {\bibsentence
+   \usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {\multicitedelim}
+  {\usebibmacro{cite:postnote}}
+
+\endinput

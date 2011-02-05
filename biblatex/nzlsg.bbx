@@ -1,0 +1,405 @@
+% nzzlsg.bbx d
+
+
+\ProvidesFile{nzzlsg.bbx}
+[\blx@bbxid $Id: standard.bbx,v 0.7 2007/12/09 14:52:00 lehman beta $]
+
+
+% AGLC likes to use single quotes everywhere, not double quotes.
+%\renewrobustcmd{\mkbibquote}[1]{`#1'}  %not UoA though! cge
+
+\newbibmacro*{finentry}{\finentry}
+
+\DeclareFieldFormat{urldate}{#1}
+
+\DeclareFieldFormat{pages}{#1}
+\DeclareFieldFormat{postnote}{#1}
+\renewcommand*{\finalnamedelim}{%
+  \ifnum\value{liststop}>2 \fi
+  \addspace\bibstring{and}\space}
+
+\DeclareBibliographyDriver{shorthands}{%
+  \usedriver
+    {\DeclareNameAlias{sortname}{default}}
+    {\thefield{entrytype}}%
+  \finentry}
+
+\DeclareBibliographyDriver{cite}{%
+  \usebibmacro{bibindex}%
+  \printnames[default]{author}%
+  \setunit{\addcomma\space}\newblock
+  \usebibmacro{title}%
+  \setunit{\space}\newblock
+  \usebibmacro{journal+issuetitle}%
+  %\iffieldundef{pages}{}
+  %{\printfield{pages}%
+  %\setunit{\space}\newblock}
+  \printfield{note}%
+  \setunit{\addcomma}\newblock
+  %\usebibmacro{pageref}%
+  \finentry} %\usebibmacro{finentry}
+
+% CASES
+
+% Just simple for the moment, citation is provided in "notes" and regurgitated here.
+\DeclareBibliographyDriver{jurisdiction}{%
+  \usebibmacro{bibindex}%
+ \iffieldundef{addendum}{}{\printfield{addendum}\setunit{\addcomma\space}\newblock}%
+  \usebibmacro{title}%
+  \setunit{\space}\newblock
+  \printfield{note}%
+   \setunit{\space}\newblock
+ \usebibmacro{juris}%  
+  %\setunit{\addcomma}\newblock
+  %\usebibmacro{pageref}%
+  \finentry} %\usebibmacro{finentry}
+
+%\DeclareBibliographyDriver{short:jurisdiction}{%
+%  \usebibmacro{bibindex}%
+%  \iffieldundef{addendum}{}{\printfield{addendum}\setunit{\addcoma}\newblock}%
+%  \usebibmacro{shorthand-or-title}
+%  \printfield{note}%
+%  %\setunit{\addcomma}\newblock
+%  %\usebibmacro{pageref}%
+%  \finentry} %\usebibmacro{finentry}
+
+\DeclareBibliographyDriver{short:jurisdiction}{%
+  \usebibmacro{bibindex}%
+ %\iffieldundef{addendum}{}{\printfield{addendum}\setunit{\addcoma}\newblock}%
+  \usebibmacro{shorthand-or-title}%
+  \finentry} %\usebibmacro{finentry}
+% LEGISLATION
+
+\DeclareBibliographyDriver{legislation}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{title+year}%
+  \iffieldundef{entrysubtype}{}
+      {\space\printfield[parens]{entrysubtype}} %need better approach here
+  %\setunit{\space}\newblock%
+  %{\it \printfield{year}}%
+  \iffieldundef{note}{}%
+    {\setunit{\space}
+    (\thefield{note})}%
+  %\iffieldundef{postnote}{}{\nopunct}
+  \finentry} %\usebibmacro{finentry}
+
+\DeclareBibliographyDriver{short:legislation}{%
+  \usebibmacro{title+year}%
+  %{\thefield{title}}
+  \finentry}
+
+
+%\DeclareBibliographyDriver{short:legislation}{%
+%  \usebibmacro{bibindex}%
+%  \printfield{title}%
+%  \finentry} %\usebibmacro{finentry}
+
+%\DeclareBibliographyAlias{short:legislation}{legislation}
+
+% TREATIES
+% TODO: Cleanup use of spaces, blocks and commas!
+% TODO: "entered into force" block should appear after the pinpoint.
+
+\DeclareBibliographyDriver{legal}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{title},
+  %\setunit{\addcomma\space}
+  opened for signature \thefield{day}\setunit{\space}\printfield{month} \printfield{year}
+  \setunit{\addcomma\space}\newblock%
+  \iflistundef{organization}{}{%
+    \printlist[endash]{organization}%
+    \setunit{\addcomma\space}\newblock}%
+  \iffieldundef{series}{}{%
+     \printfield{series}%
+     \setunit{\addcomma\space}\newblock}%
+  \iffieldundef{note}{}%
+    { (entered into force \thefield{note})}%
+  %\setunit{\addcomma}\newblock
+  %\usebibmacro{pageref}%
+  \finentry} %\usebibmacro{finentry}
+\DeclareBibliographyAlias{short:legal}{legal}
+
+% ARTICLE (journal article, newspaper article)
+
+\DeclareBibliographyDriver{article}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{author/editor}%
+  \setunit{\space}\newblock
+  \usebibmacro{title}
+  \setunit{\space}\newblock
+%sort this out (below), properly
+  \printfield{journaltitle}
+  %\usebibmacro{journal+issuetitle}%
+  \setunit{\space}\newblock
+  \printfield{pages}%
+  \setunit{\space}\newblock
+  \printfield{note}%
+  %\setunit{\space}\newblock
+  %\setunit{\addcomma}\newblock
+  %\usebibmacro{pageref}%
+  \usebibmacro{online}%
+  \finentry} %\usebibmacro{finentry}
+\DeclareBibliographyAlias{short:article}{article}
+
+% WWW
+
+\DeclareBibliographyDriver{online}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{author/editor}%
+  \setunit{\space}\newblock
+  \iffieldequals{title}{\usebibmacro{www_pub}}%
+   {}%
+   {\usebibmacro{title}}% don't print title
+  \setunit{\space}\newblock
+  \printfield{year}
+  \printlist{publisher}%
+\setunit{\space}\newblock
+  %\printfield{note}%
+  %\setunit{\space}\newblock
+  %\setunit{\addcomma}\newblock
+  %\usebibmacro{pageref}%
+  \usebibmacro{online}
+  \finentry} %\usebibmacro{finentry}
+%\DeclareBibliographyAlias{short:online}{online}
+
+\DeclareBibliographyDriver{short:online}{%
+  \usebibmacro{bibindex}%
+  \printlist{publisher}%
+  \finentry} %\usebibmacro{finentry}
+
+
+\DeclareBibliographyDriver{book}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{author/editor}%
+  \setunit{\space}\newblock
+  \usebibmacro{maintitle+title}%
+  \setunit{\space}
+  %\iffieldundef{url}{\printfield{note}\newunit\newblock}{}%
+  \setunit{}\mkbibparens{\usebibmacro{edition+publisher+location+year}}%
+  \newunit\newblock
+  \usebibmacro{origtitle}%
+  \iffieldundef{postnote}{}{\nopunct}
+  \finentry} %\usebibmacro{finentry}
+\DeclareBibliographyAlias{short:book}{book}
+
+\DeclareBibliographyDriver{incollection}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{author}%
+  \setunit{\addcomma\space}\newblock
+  \usebibmacro{maintitle+title}%
+  \setunit{\space}\newblock
+  \usebibmacro{in:}%
+  \setunit{\space}\newblock
+  \usebibmacro{editor}%
+  \setunit{\space}\newblock
+  \usebibmacro{maintitle+booktitle}%
+  \setunit{\space}
+  \printfield{note}%
+  \newunit\newblock
+  \setunit{}\mkbibparens{\usebibmacro{edition+year}}%
+  \newunit\newblock
+  \iffieldundef{postnote}{}{\nopunct}
+  \finentry} %\usebibmacro{finentry}
+\DeclareBibliographyAlias{short:incollection}{incollection}
+
+\newbibmacro*{in:}{%
+  \bibstring{in}%
+  \setunit{\space}}
+
+\newbibmacro*{www_pub}{\thelist{publisher}}
+
+\newbibmacro*{online}{%
+  \iffieldundef{url}{}{\printfield[angle]{url}\iffieldundef{note}{}{ at \printfield{note}}}%
+  }
+
+\renewbibmacro*{author}{%
+  \ifuseauthor
+    {\printnames[][1-3]{author}}
+    {}}
+
+\renewbibmacro*{editor}{%
+  \ifthenelse{\ifuseeditor\AND\NOT\ifnameundef{editor}}%
+    {\printnames[][1-3]{editor}%\addspace%
+     \usebibmacro{editorstrg}%
+     \clearname{editor}}%
+    {}}
+
+\newbibmacro*{juris}{%
+  \iffieldundef{maintitle}
+    {}
+    {\printfield[parens]{subentrytype}}
+}
+
+
+%\newbibmacro*{maintitle+title}{%
+%  \iffieldundef{maintitle}
+%    {}
+%    {\usebibmacro{maintitle}%
+%     \newunit\newblock
+%     \iffieldundef{volume}
+%       {}
+%       {\printfield{volume}%
+%        \printfield{part}%
+%        \setunit{\space}}}%
+%  \usebibmacro{title}%
+%  \newunit}
+
+\newbibmacro*{maintitle+title}{%
+  \iffieldundef{title}
+  {\usebibmacro{booktitle}}%
+  {\usebibmacro{title}}%
+  \newunit}
+
+\newbibmacro*{maintitle+booktitle}{%
+  \iffieldundef{maintitle}
+    {}
+    {\usebibmacro{maintitle}%
+     \newunit\newblock
+     \iffieldundef{volume}
+       {}
+       {\printfield{volume}%
+        \printfield{part}%
+        \setunit{\space}}}%
+  \usebibmacro{booktitle}%
+  \newunit}
+
+\newbibmacro*{journal+issuetitle}{%
+  \thefield{journal}%
+% CGE needs assessing and refactoring
+%  \usebibmacro{parensyear}%
+%  %\iffieldundef{volume}{\iffieldundef{number}{}{\setunit*{\addspace}}}{\setunit*{\addspace}}%
+%  \printfield{volume}%
+%  \iffieldundef{volume}{\printfield{number}}{\printfield[parens]{number}}%
+%  %\printfield{eid}%
+%  %\iffieldundef{volume}{\iffieldundef{number}{}{\setunit{\space}\newblock}}{\setunit{\space}\newblock}%
+%  %\setunit{\space}\newblock
+%  %\newunit\newblock
+%  %\usebibmacro{issue}%
+%  \usebibmacro{journal}%
+%  %\setunit{\space}\newblock
+}
+
+% Italic title and year for legislation, not italic for bills
+\newbibmacro*{title+year}{%
+  \setunit{\addspace}%
+  \ifthenelse{\equal{\thefield{entrysubtype}}{bill}}
+    {\thefield{title}\addspace\thefield{year}}%
+    {\ifthenelse{\equal{\thefield{entrysubtype}}{explanatory}}
+      {Explanatory Memorandum, \thefield{title}\addspace\thefield{year}}%
+      {{\thefield{title}\addspace\thefield{year}}}}%
+  \newunit}
+
+\newbibmacro*{title+issuetitle}{%
+  \usebibmacro{periodical}%
+  \setunit*{\addspace}%
+  \iffieldundef{series}
+    {}
+    {\newunit
+     \printfield{series}%
+     \setunit{\addspace}}%
+  \printfield{volume}%
+  \setunit*{\space}%
+  \printfield{number}%
+  \setunit{\space}%
+  \printfield{eid}%
+  \setunit{\addspace}%
+  \usebibmacro{issue+date}%
+  \newunit\newblock
+  \usebibmacro{issue}%
+  \newunit}
+
+\newbibmacro*{issue+date}{%
+\iffieldundef{year}{}
+  {\printtext[parens]{%
+    \iffieldundef{issue}
+      {\iffieldundef{month}
+         {\printfield{year}}
+         {\iffieldundef{day}
+            {\printfield{month}%
+             \setunit{\addspace}%
+             \printfield{year}}
+            {\printtext{\bibdate}}}}
+      {\printfield{issue}%
+       \setunit{\addspace}%
+       \printfield{year}}}}%
+  \newunit}
+
+
+% If a year is given, show it in brackets,
+% otherwise, add a comma.
+% Use square brackets if there is no volume.
+\newbibmacro*{parensyear}{%
+\iffieldundef{year}
+  {\setunit{\addcomma\space}\newblock}%
+  {\iffieldundef{volume}{\printfield[brackets]{year}}{\printfield[parens]{year}}%
+  \setunit*{\addspace}}}
+  %\newunit}}
+
+\newbibmacro*{series+number}{%
+  \printfield{series}%
+  \setunit*{\addspace}%
+  \printfield{number}%
+  \newunit}
+
+\newbibmacro*{edition+year}{%
+  \ifnameundef{translator}{}{\printnames{translator} trans\addcomma\addspace}%
+  \iffieldundef{note}{}{first published \printfield{note}\addcomma\addspace}%
+  \iffieldundef{edition}
+    {\printfield{year}}%
+    {\printfield{edition}\setunit{\addcomma\addspace}\printfield{year}}%
+  }
+
+\newbibmacro{edition+publisher+location+year}{%
+	\iffieldundef{edition}%
+		{%
+		\printlist{publisher}\setunit{\addcomma\addspace}%
+		\printlist{location}\setunit{\addcomma\addspace}%
+		\printfield{year}%
+		}%
+		{%
+		\printfield{edition}\setunit{\addcomma\addspace}%
+		\printlist{publisher}\setunit{\addcomma\addspace}%
+		\printlist{location}\setunit{\addcomma\addspace}%
+		\printfield{year}%
+		}%
+}
+
+
+
+\newbibmacro*{origtitle}{%
+  \iffieldundef{origtitle}{}{\addspace\setunit{}\mkbibbrackets{trans of: {\it \printfield{origtitle}}}}%
+  }
+
+\newbibmacro*{publisher+location+year}{%
+  \printlist{location}%
+  \iflistundef{publisher}
+    {\setunit*{\addspace}}
+    {\setunit*{\space}}%
+  \printlist{publisher}%
+  \setunit*{\space}%
+  \printfield{year}%
+  \newunit}
+
+\newbibmacro*{institution+location+year}{%
+  \printlist{location}%
+  \iflistundef{institution}
+    {\setunit*{\addspace}}
+    {\setunit*{\space}}%
+  \printlist{institution}%
+  \setunit*{\space}%
+  \printfield{year}%
+  \newunit}
+
+\newbibmacro*{location+year}{%
+  \printlist{location}%
+  \setunit*{\addspace}%
+  \printfield{year}%
+  \newunit}
+
+\newbibmacro*{chapter+pages}{%
+  \printfield{chapter}%
+  \setunit*{\space}%
+  \printfield{pages}%
+  \newunit}
+
+\endinput
