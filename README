@@ -1,1 +1,6 @@
-See the wiki, documenting approach and data mapping first.
+The files here provide a working, if not complete, latex stylesheet for the NZLSG. This includes a related Lyx style.
+
+At this stage you'll need to understand the configuration of Latex, Lyx and biblatex to use this.
+
+It may be a bit of an arse to setup but once up and running with a Bibtex management systems (e.g. Bibdesk) you'll be rewarded with beautiful output.
+  
